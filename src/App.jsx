@@ -9,7 +9,17 @@ function App() {
   useEffect(()=>{
     handleRandomizeGrid(10, 10);
   }, []);
+  useEffect(() => {
+    const enemySpawnInterval = setInterval(() => {
+      const randomCell = getRandomCell();
+      setEnemies((prevEnemies) => [...prevEnemies, randomCell]);
+      setTimeout(() => {
+        setEnemies((prevEnemies) => prevEnemies.filter(enemy => enemy !== randomCell));
+      }, 2000);
+    }, 1000); 
 
+    return () => clearInterval(enemySpawnInterval);
+  }, [maze]);
   
   const handleRandomizeGrid = (height, width) => {
     let grid = Array.from({length:height}, () => Array(width).fill('block'));
@@ -42,7 +52,14 @@ function App() {
     setPlayerPosition({ x: 1, y: 1 });
 
   }
-
+  const getRandomCell = () => {
+    const randomX = Math.floor(Math.random() * maze[0].length);
+    const randomY = Math.floor(Math.random() * maze.length);
+    if (maze[randomY][randomX] !== 'block' && maze[randomY][randomX] !== 'start' && maze[randomY][randomX] !== 'end') {
+      return { x: randomX, y: randomY };
+    }
+    return getRandomCell();
+  };
   const handleKeyDown = (e)=>{
     const {x, y} = playerPosition;
     let newX = x;
@@ -78,7 +95,7 @@ function App() {
                playerPosition.x === cellIndex && playerPosition.y === rowIndex
                  ? 'player'
                  : ''
-             }`}
+             } ${enemies.some(enemy => enemy.x === cellIndex && enemy.y === rowIndex) ? 'enemy' : ''}`}
            ></div>
             ))}
           </div>

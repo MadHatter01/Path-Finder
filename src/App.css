@@ -42,3 +42,6 @@
 .cell.player {
   background-color: blue;
 }
+.cell.enemy {
+  background-color: purple;
+}
