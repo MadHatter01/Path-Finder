@@ -5,7 +5,7 @@ import Confetti from 'react-confetti';
 function App() {
   const [maze, setMaze] = useState([]);
   const [enemies, setEnemies] = useState([]);
-  const [playerPosition, setPlayerPosition] = useState({ x: 1, y: 0 });
+  const [playerPosition, setPlayerPosition] = useState({ x: 0, y: 1 });
   const [gameOver, setGameOver] = useState(false);
   const [gameWon, setGameWon] = useState(false);
 
@@ -52,7 +52,7 @@ function App() {
     grid[1][0] = 'start';
     grid[height - 2][width - 1] = 'end';
     setMaze(grid);
-    setPlayerPosition({ x: 1, y: 1 });
+    setPlayerPosition({ x: 0, y: 1 });
 
   }
   const getRandomCell = () => {
@@ -93,14 +93,33 @@ function App() {
       setGameWon(true);
     }
   }
+  const resetGame = ()=>{
+    setGameOver(false);
+    setGameWon(false);
+    setPlayerPosition({x:1, y:0});
+    setEnemies([]);
+    handleRandomizeGrid(10, 10);
+  }
 
   return (
     <div className='container' onKeyDown={handleKeyDown} tabIndex={0} >
       <button onClick={() => handleRandomizeGrid(10, 10)}>Randomize Grid</button>
-      { gameWon && (<Confetti
+     
+     {(gameOver || gameWon) && (
+        <div className="overlay">
+          <div className="message">
+          { gameWon && (<Confetti
       width={window.width}
       height={window.heigth}
-    />)}
+        />)} 
+            {gameWon ? 'You Win!' : 'Game Over!'}
+            <br />
+            <button onClick={resetGame} className="reset-button">
+              Play Again!
+            </button>
+          </div>
+        </div>
+      )}
       <div className='maze-grid'  >
         {maze.map((row, rowIndex) => (
           <div key={rowIndex} className='row'>
@@ -117,8 +136,7 @@ function App() {
           </div>
         ))}
       </div>
-      {gameOver && <div className='game-over'>Game Over! </div>}
-      {gameWon && <div className='game-won'>You win! </div>}
+   
     </div>
   )
 }

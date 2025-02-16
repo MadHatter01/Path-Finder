@@ -2,6 +2,7 @@
   max-width: 1280px;
   padding: 2rem;
   margin: 0 auto;
+  overflow: hidden;
 }
 
 .row{
@@ -44,4 +45,33 @@
 }
 .cell.enemy {
   background-color: purple;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+
+.message {
+  font-size: 1.5rem;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+}
+.reset-button {
+  margin-top: 20px;
+  background-color: #4c4faf;
+  border-radius: 5px;
+}
+
+.reset-button:hover {
+  background-color: #10319d;
 }
