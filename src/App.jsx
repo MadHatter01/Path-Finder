@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import './App.css'
+import Confetti from 'react-confetti';
 
 function App() {
   const [maze, setMaze] = useState([]);
   const [enemies, setEnemies] = useState([]);
   const [playerPosition, setPlayerPosition] = useState({ x: 1, y: 0 });
+  const [gameOver, setGameOver] = useState(false);
+  const [gameWon, setGameWon] = useState(false);
 
   useEffect(()=>{
     handleRandomizeGrid(10, 10);
@@ -61,6 +64,7 @@ function App() {
     return getRandomCell();
   };
   const handleKeyDown = (e)=>{
+    if(gameOver || gameWon) return;
     const {x, y} = playerPosition;
     let newX = x;
     let newY = y;
@@ -80,12 +84,24 @@ function App() {
     if (newX >=0 && newY >=0 && newX < maze[0].length && newY < maze.length &&maze[newY][newX]!= 'block'){
       setPlayerPosition({x: newX, y: newY});
     }
+
+    if(enemies.some(enemy => enemy.x === newX && enemy.y === newY)){
+      setGameOver(true);
+    }
+    console.log(maze.length-1, playerPosition.x, playerPosition.y)
+    if(newX === maze[0].length -1 && newY === maze.length -2){
+      setGameWon(true);
+    }
   }
 
   return (
-    <div className='container' onKeyDown={handleKeyDown} >
+    <div className='container' onKeyDown={handleKeyDown} tabIndex={0} >
       <button onClick={() => handleRandomizeGrid(10, 10)}>Randomize Grid</button>
-      <div className='maze-grid'  tabIndex={0}>
+      { gameWon && (<Confetti
+      width={window.width}
+      height={window.heigth}
+    />)}
+      <div className='maze-grid'  >
         {maze.map((row, rowIndex) => (
           <div key={rowIndex} className='row'>
             {row.map((cell, cellIndex) => (
@@ -101,6 +117,8 @@ function App() {
           </div>
         ))}
       </div>
+      {gameOver && <div className='game-over'>Game Over! </div>}
+      {gameWon && <div className='game-won'>You win! </div>}
     </div>
   )
 }
