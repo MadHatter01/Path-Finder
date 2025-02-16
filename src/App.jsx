@@ -1,34 +1,59 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useState } from 'react';
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [maze, setMaze] = useState([
+    ['block', 'block', 'block', 'path'],
+    ['start', 'path', 'path', 'block'],
+    ['block', 'path', 'block', 'block'],
+    ['path', 'path', 'path', 'block'],
+    ['path', 'block', 'block', 'end'],
+    ['path', 'path', 'path', 'block']
+  ]);
+  
+  const handleRandomizeGrid = (height, width) => {
+    let grid = Array.from({length:height}, () => Array(width).fill('block'));
+
+    const isValidCell = (x, y)=>{
+      return x >=0 && y >= 0 && x < width && y < height && grid[y][x] === 'block';
+    }
+    const _directions = [[1,0], [-1, 0], [0, 1], [0, -1]];
+
+    const createPath = (x, y)=>{
+      grid[y][x] = 'path';
+
+      const directions = _directions.sort(()=> Math.random() - 0.5);
+
+      for (let [dx, dy] of directions){
+        const nx = x + dx * 2;
+        const ny = y + dy * 2;
+
+        if (isValidCell(nx, ny)){
+          grid[y + dy][ x + dx] = 'path';
+          createPath(nx, ny);
+        }
+      }
+    }
+    createPath(1, 1);
+    setMaze(grid);
+    grid[1][0] = 'start';
+    grid[height - 2][width - 1] = 'end';
+
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className='container'>
+      <button onClick={() => handleRandomizeGrid(6, 4)}>Randomize Grid</button>
+      <div className='maze-grid'>
+        {maze.map((row, rowIndex) => (
+          <div key={rowIndex} className='row'>
+            {row.map((cell, cellIndex) => (
+              <div key={cellIndex} className={`cell ${cell}`}></div>
+            ))}
+          </div>
+        ))}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </div>
   )
 }
 
